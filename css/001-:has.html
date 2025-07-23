@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>:has选择器</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      .container {
+        display: flex;
+        gap: 1rem;
+        margin: 0 auto;
+        width: 1600px;
+      }
+      .container:has(> p) {
+        flex-direction: column;
+      }
+      .card {
+        display: flex;
+        max-width: 40vw;
+        border-radius: 12px;
+        background-color: #ccc;
+      }
+      .card img {
+        display: block;
+        max-width: 100%;
+        aspect-ratio: 16/9;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      .card:has(figcaption) {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 20px;
+      }
+      /* 
+       匹配figure标签并且class有card的元素，并且子元素中有img标签
+      */
+      figure.card:has(img) {
+        background-color: #3f51b5;
+      }
+      /* 
+       匹配figure标签并且class有card的元素，并且img标签后面有figcaption标签
+      */
+      figure.card:has(img + figcaption) {
+        background-color: #607d8b;
+      }
+      /* 给嵌套在 figure.card > .media 下的所有 img 设置圆角 */
+      figure.card:has(.media img) img {
+        border-radius: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <p>demo1</p>
+      <div class="container">
+        <figure class="card">
+          <img src="/assets/images/mock-1.png" alt="card-1" />
+        </figure>
+        <figure class="card card--has-title">
+          <img src="/assets/images/mock-2.png" alt="card-2" />
+          <figcaption>modern css: Parent Selector :has()</figcaption>
+        </figure>
+      </div>
+      <p>demo2</p>
+      <div class="container">
+        <figure class="card">
+          <figcaption>CSS Pseudo-Class Specification</figcaption>
+          <img src="/assets/images/mock-1.png" alt="card-1" />
+        </figure>
+        <figure class="card">
+          <div class="media">
+            <img src="/assets/images/mock-2.png" alt="card-2" />
+          </div>
+          <figcaption>CSS Pseudo-Class Specification</figcaption>
+        </figure>
+        <figure class="card">
+          <img src="/assets/images/mock-2.png" alt="card-3" />
+          <figcaption>CSS Pseudo-Class Specification</figcaption>
+        </figure>
+      </div>
+    </div>
+  </body>
+</html>

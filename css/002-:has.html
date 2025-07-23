@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      /**
+            :has(~ .divider) 选中该元素后面元素中有.divider
+            :not() 排除
+            最终是选中.divider元素，并且divider元素后面没有.divider元素
+            也就是选中同级元素中最后一个.divider元素
+      */
+      .divider:not(:has(~ .divider)) {
+        color: red;
+      }
+      .divider:not(:has(~ .divider)):not(.divider ~ *) {
+        background-color: #000;
+      }
+      .divider:not(.divider ~ *) {
+        color: aquamarine;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">Div Element</div>
+    <div class="box">Dive Element</div>
+    <div class="divider">Divider</div>
+
+    <div class="box">Dive Element</div>
+    <div class="box">Dive Element</div>
+    <div class="divider">Divider</div>
+  </body>
+</html>
