@@ -1,0 +1,9 @@
+{
+  "name": "Front-end-Development-Notes",
+  "type": "module",
+  "author": "charlie.l1u@outlook.com",
+  "packageManager": "pnpm@10.13.1",
+  "dependencies": {
+    "lodash-es": "^4.17.21"
+  }
+}
