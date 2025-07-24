@@ -14,6 +14,15 @@
       .divider:not(:has(~ .divider)) {
         color: red;
       }
+      /** 
+        首先选中所有的.divider元素，
+        :not(:has(~ .divider)) 选中同级元素中最后一个.divider元素
+        :not(.divider ~ *)
+        .divider ~ * 选中.divider后面的所有元素
+        :not(.divider ~ *) 同层级元素前面没有 .divider
+
+        最终结果是选中的同层级中唯一的.divider元素
+      */
       .divider:not(:has(~ .divider)):not(.divider ~ *) {
         background-color: #000;
       }

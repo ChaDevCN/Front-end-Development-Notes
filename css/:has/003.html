@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>:has-demo</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      ul {
+        width: fit-content;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2.25rem;
+      }
+      li,
+      li img {
+        list-style: none;
+        transition: all cubic-bezier(0.4, 0.8, 0.71, 1.03) 180ms;
+        transition-delay: var(40ms, 0);
+        cursor: pointer;
+      }
+      li:hover {
+        scale: 1.25;
+      }
+      li:hover + li,
+      li:has(+ li:hover) {
+        scale: 1.05;
+        filter: blur(2px);
+      }
+      ul:hover li:not(li:hover + li, li:has(+ li:hover), li:hover) {
+        scale: 0.95;
+        filter: blur(2px);
+        opacity: 0.5;
+      }
+    </style>
+  </head>
+  <body>
+    <ul>
+      <li>
+        <img src="https://picsum.photos/200/200/?random=1" alt="" />
+      </li>
+      <li>
+        <img src="https://picsum.photos/200/200/?random=2" alt="" />
+      </li>
+      <li>
+        <img src="https://picsum.photos/200/200/?random=3" alt="" />
+      </li>
+      <li>
+        <img src="https://picsum.photos/200/200/?random=4" alt="" />
+      </li>
+      <li>
+        <img src="https://picsum.photos/200/200/?random=5" alt="" />
+      </li>
+      <li>
+        <img src="https://picsum.photos/200/200/?random=6" alt="" />
+      </li>
+      <li>
+        <img src="https://picsum.photos/200/200/?random=7" alt="" />
+      </li>
+      <li>
+        <img src="https://picsum.photos/200/200/?random=8" alt="" />
+      </li>
+      <li>
+        <img src="https://picsum.photos/200/200/?random=9" alt="" />
+      </li>
+    </ul>
+  </body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      div {
+        width: 100px;
+        height: 100px;
+        background-color: #a2cbfa;
+      }
+      /**
+         .rect 选中所有的.rect元素，
+         + 并且后面紧挨着元素
+         紧挨着这个元素的后面有.rect元素
+
+         可以理解为选中，选中rect区间中的第一个元素
+      */
+      .rect + :has(~ .rect) {
+        border: 2px solid #09f;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="rect"></div>
+      <!-- Rect 范围开始 -->
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <!-- Rect 范围结束 -->
+      <div class="rect"></div>
+
+      <div class="circle"></div>
+
+      <div class="star"></div>
+      <!-- Star 范围开始 -->
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <!-- Start 范围结束 -->
+      <div class="star"></div>
+    </div>
+  </body>
+</html>
