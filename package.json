@@ -8,6 +8,9 @@
     "typescript": "^5.8.3"
   },
   "devDependencies": {
-    "tsx": "^4.20.3"
+    "tsx": "^4.20.3",
+    "folktale": "^2.3.2",
+    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21"
   }
 }

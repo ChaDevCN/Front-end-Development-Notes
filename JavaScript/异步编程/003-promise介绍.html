@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promise介绍</title>
+    
+</head>
+
+<body>
+    <script>
+        /**
+         * promise总共有三个状态，进行中，成功，失败，一但成功或失败后它的状态不可改变。
+                promise示例会返回.then .catch .finally
+                ● .then
+                    ○ 接受两个参数，分别是成功的回调，失败的回调，.then(success, error) 中的 error 如果已经处理了错误，就不会再传给 .catch，除非你在 error 回调中再次抛出异常。  
+                ● .catch
+                    ○ 接受一个参数，用来处理失败的回调
+                ● .finally
+                    ○ 接受一个参数，不管成功还是失败都会出发的回调函数，回调中的函数不会接受任何参数
+         * 
+         */
+        console.log('start');
+        const promise = new Promise(function (resolve, reject) {
+            const random = Math.random()
+            console.log(random, '内部');
+
+            if (random > 0.5) {
+                resolve(random)
+            } else {
+                reject(new Error(random))
+            }
+        })
+        promise.then(res => {
+            console.log(res, '成功');
+
+        }, err => {
+            console.log(err, '失败');
+
+        }).catch(err => {
+            console.log(err, '失败');
+        })
+        .finally(res=>{
+            console.log(res,'finally'); 
+        })
+    </script>
+</body>
+
+</html>

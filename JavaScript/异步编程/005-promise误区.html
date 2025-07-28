@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>promise误区</title>
+</head>
+
+<body>
+    <script>
+        function ajax(url) {
+            return new Promise(function (resolve, reject) {
+                const xml = new XMLHttpRequest()
+                xml.open('get', url)
+                xml.responseType = 'json'
+                xml.onload = function () {
+                    if (this.status === 200) {
+                        resolve(this.response)
+                    } else {
+                        reject(new Error(this.statusText))
+                    }
+                }
+                xml.send()
+            })
+        }
+        /** 
+         * 一个经典的案例,下次的调用依赖上一次的结果
+        */
+        const r = ajax('/api/urls.json')
+        r.then(res => {
+            ajax(res)
+                .then(res => {
+                    ajax(res)
+                        .then(res => {
+                            ajax(res)
+                                .then(res => {
+
+                                })
+                        })
+                })
+        }, err => {
+            console.log(err);
+        })
+        /**
+         * 上边的代码看起来还是有回调地狱问题，
+         * 但是我们说promise是为了解决回调地狱问题，实际上是我们上边的代码书写有问题，
+         * 正确的方式应该是下边的代码书写方式
+        */
+        const r1 = ajax('/api/urls.json')
+        r1.then(res => {
+            return res
+        })
+        .then(res=>{
+            return 123
+        })
+        .then(res=>{
+            return res 
+        })
+        /** 
+         *  Promise对象的then方法会返回一个全新的Promise对象
+         *  后面的then方法就是在为上一个then返回的Promise注册回调
+         *  前面then方法中回调函数的返回值会作为后面then方法回调的参数
+         *  如果回调中返回的是Promise，那后面then方法的回调会等待它的结束
+        */
+    </script>
+</body>
+
+</html>

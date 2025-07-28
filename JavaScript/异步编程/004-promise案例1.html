@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用Promise封装ajax</title>
+</head>
+
+<body>
+    <script>
+        function ajax(url) {
+            return new Promise(function (resolve, reject) {
+                const xml = new XMLHttpRequest()
+                xml.open('get', url)
+                xml.responseType = 'json'
+                xml.onload = function () {
+                    if (this.status === 200) {
+                        resolve(this.response)
+                    } else {
+                        reject(new Error(this.statusText))
+                    }
+                }
+                xml.send()
+            })
+        }
+        ajax('/api/data.json').then(res => {
+            console.log(res);
+        }, err => {
+            console.log(err);
+
+        })        
+    </script>
+</body>
+
+</html>

@@ -59,3 +59,4 @@ const memoizedGetArea = memoize(getArea);
 console.log(memoizedGetArea(10));
 console.log(memoizedGetArea(10));
 console.log(memoizedGetArea(10));
+
