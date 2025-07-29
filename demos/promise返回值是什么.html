@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /**
+         *  promise的返回值是什么
+         */
+        const promise = new Promise(r => r(100))
+        const p1 = promise.then(res => {
+            console.log(res);
+
+        })
+        console.log(p1,'p1'); //看起来像是this 等我深入promise以后在来解释这个问题吧
+        
+    </script>
+</body>
+
+</html>
