@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      /**
+       *
+       * this 不是代码编写的时候确定的 而是执行的时候
+       * /
+      /**
+       * 全局作用域指向 this 指向window
+       */
+      function foo() {
+        console.log(this.a); // 2
+      }
+      var a = 2;
+      foo();
+      /**
+       * 如果foo在严格模式下执行 this是undefined。
+       * 和在什么模式下调用没关系
+       */
+      // function foo() {
+      //   "use strict";
+      //   console.log(this.a); // TypeError
+      // }
+      // var a = 2;
+      // foo();
+      /**
+       * 在对象中
+       * 因为是通过对象来调用foo的 此时foothis指向了对象
+       */
+      var obj = {
+        a: 42,
+        fn: foo,
+      };
+      obj.fn(); //42
+      /** */
+
+      var obj2 = {
+        a: 123,
+        foo,
+      };
+      var bar = obj2.foo;
+      var a = "oops global";
+
+      bar(); // oops global
+      /**
+       * 函数传递 取决于最外层函数的this
+       */
+      function doFoo(fn) {
+        fn();
+      }
+      doFoo(obj2.foo);
+    </script>
+  </body>
+</html>

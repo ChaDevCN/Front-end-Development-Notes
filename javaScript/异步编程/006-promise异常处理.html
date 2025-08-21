@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>promise异常处理</title>
+</head>
+
+<body>
+    <script>
+        const promise = new Promise(function (resolve, reject) {
+            const random = Math.random()
+            if (random > 0.5) {
+                resolve(random)
+            } else {
+                reject(new Error(random))
+            }
+        })
+        promise.then(res => {
+            console.log(res);
+            throw new Error('then 抛出错误 ')
+        }).catch(err => {
+            console.log(err);
+        }).then(res => {
+            console.log(res);
+        })
+        /**
+         * 如果promise内部出现错误，以及reject都能被.catch捕获到
+         * 但是链式调用中如果then传递了两个函数，第二个捕获错误的函数只能接受到
+         * 当前promise的错误
+         * 如果链式调用中有.catch 那么整个链条中的promise错误它都能捕获到
+         * 也可以使用注册事件的方式来捕获错误
+         */
+        // 浏览器环境
+        window.addEventListener("unhandledrejection", event => {
+            const { reason, promise } = event
+            // reason => promise失败的原因，一般是一个错误对象
+            // promise => 出现异常的 Promise 对象
+            event.preventDefault()  // 阻止默认警告
+        }, false)
+        // node环境
+        process.on('unhandledRejection', (reason, promise) => {
+            // reason => promise失败的原因，一般是一个错误对象
+            // promise => 出现异常的 Promise 对象
+        })
+    </script>
+
+</body>
+
+</html>

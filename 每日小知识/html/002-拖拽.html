@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #drop:-moz-drag-over {
+        border: 1px solid red;
+      }
+    </style>
+  </head>
+  <body>
+    <p id="dragMe" draggable="true">拖我试试</p>
+
+    <div
+      id="drop"
+      ondragover="event.preventDefault()"
+      style="width: 200px; height: 100px; background: #eee"
+    >
+      放这里
+    </div>
+
+    <script>
+      const dragEl = document.getElementById("dragMe");
+      const drop = document.getElementById("drop");
+
+      dragEl.addEventListener("dragstart", function (event) {
+        // 保存元素 id 到拖拽数据中
+        event.dataTransfer.setData("text/id", dragEl.id);
+      });
+
+      drop.addEventListener("drop", function (event) {
+        event.preventDefault();
+
+        // 获取被拖拽元素的 id
+        const id = event.dataTransfer.getData("text/id");
+        const el = document.getElementById(id);
+
+        // 把元素移动到目标容器中
+        drop.appendChild(el);
+      });
+    </script>
+
+    <!-- 
+     只有图像、链接、文本有默认可拖拽行为
+     其他元素需要设置draggable属性为true
+    -->
+    <p draggable="true" ondragstart="dragWithCustomImage(event)">
+      This text <strong>may</strong> be dragged.
+    </p>
+    <input type="text" />
+    <div
+      ondragover="return false"
+      style="width: 100px; height: 100px; background-color: #fff"
+      class="droparea"
+    ></div>
+    <div ondragover="event.preventDefault()"></div>
+
+    <script>
+      function dragWithCustomImage(event) {
+        event.dataTransfer.effectAllowed = "copy";
+      }
+    </script>
+  </body>
+</html>
