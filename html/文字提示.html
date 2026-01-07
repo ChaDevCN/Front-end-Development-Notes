@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>纯CSS文字提示组件</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .demo-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .demo-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .demo-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 500;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            align-items: center;
+            justify-items: center;
+            padding: 20px 0;
+        }
+
+        /* 基础 Tooltip 样式 */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tooltip:hover {
+            transform: translateY(-2px);
+        }
+
+        .tooltip::before {
+            content: attr(data-text);
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            line-height: 1.5;
+            white-space: normal;
+            word-wrap: break-word;
+            min-width: 200px;
+            max-width: 400px;
+            width: max-content;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .tooltip:hover::before,
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 上方提示 (默认) */
+        .tooltip-top::before {
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+        }
+
+        .tooltip-top::after {
+            bottom: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .tooltip-top:hover::before {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 下方提示 */
+        .tooltip-bottom::before {
+            top: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+        }
+
+        .tooltip-bottom::after {
+            top: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-bottom-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .tooltip-bottom:hover::before {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 左侧提示 */
+        .tooltip-left::before {
+            right: calc(100% + 10px);
+            top: 50%;
+            transform: translateY(-50%) translateX(10px);
+        }
+
+        .tooltip-left::after {
+            right: calc(100% + 2px);
+            top: 50%;
+            transform: translateY(-50%);
+            border: 6px solid transparent;
+            border-left-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .tooltip-left:hover::before {
+            transform: translateY(-50%) translateX(0);
+        }
+
+        /* 右侧提示 */
+        .tooltip-right::before {
+            left: calc(100% + 10px);
+            top: 50%;
+            transform: translateY(-50%) translateX(-10px);
+        }
+
+        .tooltip-right::after {
+            left: calc(100% + 2px);
+            top: 50%;
+            transform: translateY(-50%);
+            border: 6px solid transparent;
+            border-right-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .tooltip-right:hover::before {
+            transform: translateY(-50%) translateX(0);
+        }
+
+        /* 彩色主题 */
+        .tooltip-success::before {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+        }
+
+        .tooltip-success.tooltip-top::after {
+            border-top-color: #4CAF50;
+        }
+
+        .tooltip-success.tooltip-bottom::after {
+            border-bottom-color: #4CAF50;
+        }
+
+        .tooltip-success.tooltip-left::after {
+            border-left-color: #4CAF50;
+        }
+
+        .tooltip-success.tooltip-right::after {
+            border-right-color: #4CAF50;
+        }
+
+        .tooltip-warning::before {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+        }
+
+        .tooltip-warning.tooltip-top::after {
+            border-top-color: #FF9800;
+        }
+
+        .tooltip-warning.tooltip-bottom::after {
+            border-bottom-color: #FF9800;
+        }
+
+        .tooltip-warning.tooltip-left::after {
+            border-left-color: #FF9800;
+        }
+
+        .tooltip-warning.tooltip-right::after {
+            border-right-color: #FF9800;
+        }
+
+        .tooltip-error::before {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+
+        .tooltip-error.tooltip-top::after {
+            border-top-color: #f44336;
+        }
+
+        .tooltip-error.tooltip-bottom::after {
+            border-bottom-color: #f44336;
+        }
+
+        .tooltip-error.tooltip-left::after {
+            border-left-color: #f44336;
+        }
+
+        .tooltip-error.tooltip-right::after {
+            border-right-color: #f44336;
+        }
+
+        .tooltip-info::before {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+        }
+
+        .tooltip-info.tooltip-top::after {
+            border-top-color: #2196F3;
+        }
+
+        .tooltip-info.tooltip-bottom::after {
+            border-bottom-color: #2196F3;
+        }
+
+        .tooltip-info.tooltip-left::after {
+            border-left-color: #2196F3;
+        }
+
+        .tooltip-info.tooltip-right::after {
+            border-right-color: #2196F3;
+        }
+
+        /* 示例元素样式 */
+        .demo-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .demo-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .demo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .demo-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .demo-text {
+            color: #333;
+            font-size: 16px;
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .demo-text:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+
+        .demo-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .demo-container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .demo-title {
+                font-size: 24px;
+            }
+
+            .demo-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .tooltip::before {
+                min-width: 180px;
+                max-width: 320px;
+                font-size: 14px;
+                padding: 12px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="demo-container">
+        <h1 class="demo-title">纯CSS文字提示组件</h1>
+
+        <div class="demo-section">
+            <h2 class="section-title">基础位置示例</h2>
+            <div class="demo-grid">
+                <div class="tooltip tooltip-top" data-text="这是顶部提示信息">
+                    <button class="demo-button">顶部提示</button>
+                </div>
+                <div class="tooltip tooltip-bottom" data-text="这是底部提示信息">
+                    <button class="demo-button">底部提示</button>
+                </div>
+                <div class="tooltip tooltip-left" data-text="这是左侧提示信息">
+                    <button class="demo-button">左侧提示</button>
+                </div>
+                <div class="tooltip tooltip-right" data-text="这是右侧提示信息">
+                    <button class="demo-button">右侧提示</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">彩色主题示例</h2>
+            <div class="demo-grid">
+                <div class="tooltip tooltip-top tooltip-success" data-text="操作成功！数据已保存">
+                    <div class="demo-icon">✓</div>
+                </div>
+                <div class="tooltip tooltip-top tooltip-warning" data-text="警告：请检查输入信息">
+                    <div class="demo-icon">⚠</div>
+                </div>
+                <div class="tooltip tooltip-top tooltip-error" data-text="错误：操作失败，请重试">
+                    <div class="demo-icon">✕</div>
+                </div>
+                <div class="tooltip tooltip-top tooltip-info" data-text="提示：点击查看更多详情">
+                    <div class="demo-icon">ℹ</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">不同元素示例</h2>
+            <div class="demo-grid">
+                <div class="tooltip tooltip-top" data-text="这是一段可以悬停的文本，支持长文本自动换行显示">
+                    <span class="demo-text">悬停文本</span>
+                </div>
+                <div class="tooltip tooltip-bottom" data-text="To provide an accurate quote, please provide the following information: style, size, surface treatment requirements, quantity, and relevant drawings.">
+                    <img class="demo-image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABjklEQVR4AdSVbU4EIQyG1YupJ1NPpp5M+/yAFCj9GNaY3dCUoe3bB8jOPD388++uAV7k8LTJY31UToBm79LiU+xHDK+trZEj4dzIArRGbyILiDhzECMHmBRIBIAgYnizo7PYQNxaD4AdsHOnRyqEBlpm8g4AanZgFl1YRAvNpXQHAPWSfLhgaloA2+MyAL5k7UMsOxZtC4DjygjS/FUSEWUu03CgPVzFDIBYqHKY4AI8H4pnyoce8wkMdBm1CzlDDw0wBC4IV0p6Lw1QEbhZ7q0A+o6qZCcANOU7Yb5gsiAaIPtfnrUBmdei595LA1DUAzz8kQ09ZoDvYlPehFilbOgxAwx0gSq52oL0Hh7ethZA9uPC3SOGMe8dnMmiPQNQiyA+Y3xcsEwuOYu2BUBi9V6piczU3AFwt8txRR2cOFpoLik7ABI5LpOaYMHQQMss8QAogPpRJuxAXGm0Wvy2MAJoheyggXiCxDB2jbX6rc8CNAFAEAYGr02vAdFqXF8F0GI00aZj6fkJQKpJlPQLAAD//1JNV3UAAAAGSURBVAMAtONAQX504lkAAAAASUVORK5CYII=" alt="示例图片">
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="section-title">组合效果示例</h2>
+            <div class="demo-grid">
+                <div class="tooltip tooltip-right tooltip-info" data-text="这是一个组合了右侧位置和信息主题的提示">
+                    <button class="demo-button">组合效果1</button>
+                </div>
+                <div class="tooltip tooltip-left tooltip-success" data-text="左侧成功提示，支持多行文本显示，可以包含更多详细信息">
+                    <button class="demo-button">组合效果2</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
