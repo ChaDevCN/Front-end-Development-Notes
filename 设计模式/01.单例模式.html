@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /** 
+         * 单例模式
+         * 1. 常用于需要全局唯一实例的场景
+         * 2. 比如： window、线程池、日志对象等
+        */
+
+        //  1. 利用闭包实现
+        const CreateDiv = (
+            function () {
+                let instance;
+                const CreateDiv = function (html) {
+                    if (instance) {
+                        return instance
+                    }
+                    this.html = html;
+                    this.init();
+                    return instance = this;
+                }
+                CreateDiv.prototype.init = function () {
+                    const div = document.createElement('div')
+                    div.innerText = this.html
+                    document.body.appendChild(div)
+                }
+                return CreateDiv
+            }
+        )()
+        const d1 = new CreateDiv('sp123213an1')
+        const d2 = new CreateDiv('123213')
+        console.log(d1 === d2);// true
+        // 2. 利用es6静态属性实现
+        class CreateSpan {
+            static instance;
+            constructor(html) {
+                if (CreateSpan.instance) {
+                    return CreateSpan.instance
+                }
+                this.html = html;
+                this.init()
+                // 保存单例
+                CreateSpan.instance = this;
+                return CreateSpan.instance;
+            }
+            init() {
+                const div = document.createElement('span');
+                div.innerText = this.html;
+                document.body.appendChild(div);
+            }
+        }
+        const s1 = new CreateSpan('11')
+        const s2 = new CreateSpan('11')
+        console.log(s1 === s2);
+
+        // 以上的方法是有缺陷的，可读性差，多出来了一些多余变量，如果业务变更需要把单例变成多例 是一件很痛苦的事情，我们应该利用代理类完成
+
+        // es5写法
+
+        const CreateNewDiv = function (html) {
+            this.html = html;
+            this.init()
+        }
+        CreateNewDiv.prototype.init = function () {
+            const div = document.createElement('div');
+            div.innerHTML = this.html;
+            document.body.appendChild(div);
+        }
+
+        const ProxySingletoCreateDiv = (function () {
+            let instance;
+            return function (html) {
+                if (!instance) {
+                    instance = new CreateNewDiv(html)
+                }
+                return instance
+            }
+        })()
+        const nextNewDiv1 = new ProxySingletoCreateDiv('123');
+        const nextNewDiv2 = new ProxySingletoCreateDiv('123');
+        console.log(nextNewDiv1 === nextNewDiv2); // true
+
+        // 这里的单例还是有问题的 CreateNewdiv 是硬编码
+
+        const getSingle = function (fn) {
+            let result
+            return function () {
+                return result || (result = fn.apply(this, arguments))
+            }
+        }
+        const fn = () => {
+            console.log('ffff');
+            return 123;
+        }
+        const fn1 = () => {
+            console.log('ffff');
+            return 123;
+        }
+        const runFN = getSingle(fn)
+        // const singleFn2 = getSingle(fn)
+
+        // console.log(singleFn1 === singleFn2);
+        runFN();
+        runFN();
+        const runFn1 = getSingle(fn1)
+
+        runFn1()
+        runFn1()
+
+        // 完成异步单例
+
+        const getSingleAsync = function (fn) {
+            let result;
+            return function () {
+                return result = result || (result = fn.apply(this, arguments));
+            }
+        }
+
+        const asyncFn = function () {
+            return new Promise(resolve => {
+                console.log('执行 asyncFn');
+                setTimeout(() => resolve(1123), 1000);
+            })
+        }
+
+        const runAsyncFn = getSingleAsync(asyncFn)
+
+        runAsyncFn().then(res => console.log('第一次:', res));
+
+
+        const btn = document.createElement('button')
+        btn.innerHTML = 'runAsyncFn';
+        document.body.appendChild(btn);
+
+        function aaa() {
+            setTimeout(() => {
+                return 123
+            }, 1);
+        }
+        console.log(aaa(), 'aaa',runAsyncFn());
+
+    </script>
+</body>
+
+</html>
