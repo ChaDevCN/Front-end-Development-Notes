@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div style="position: absolute;background:blue;" id="div">
+        我是div
+    </div>
+    <br>
+    <br>
+    <br>
+    <form id="login">
+        <label for="name">
+            用户名
+        </label>
+        <input type="text" name="username" id="name">
+        <label for="password">
+            密码
+        </label>
+        <input type="password" name="password" id="password">
+        <label for="phone">
+            手机号
+        </label>
+        <input type="text" name="phone" id="phone">
+        <button type="submit">提交</button>
+    </form>
+    <script>
+
+        /**
+         * 策略模式的思想：
+         *  定义一系列的算法，把它们一个个封装起来，并且使它们可以相互替换。
+         * 
+         *  一个基于策略模式的程序至少有两部分组成
+         *  1. 策略类，封装具体的算法
+         *  2. 环境类Context 接收客户的请求，把请求委托给某一个策略类 （需要维持对某个策略对象的引用） 
+        */
+
+        /**
+         * 需求 根据不同的绩效 计算年终奖
+         * 绩效S的 年终奖是 工资的4倍
+         * 绩效A的 年终奖是 工资的3倍
+         * 绩效B的 年终奖是 工资的2倍
+        */
+        const performanceS = function () { };
+        performanceS.prototype.calculate = function (salary) {
+            return salary * 4;
+        };
+        const performanceA = function () { };
+        performanceA.prototype.calculate = function (salary) {
+            return salary * 3;
+        };
+        const performanceB = function () { };
+        performanceB.prototype.calculate = function (salary) {
+            return salary * 2;
+        };
+
+        const Bouns = function () {
+            this.salary = null;
+            this.strategy = null;
+        }
+        Bouns.prototype.setSalary = function (salary) {
+            this.salary = salary
+        }
+        Bouns.prototype.setStrategy = function (strategy) {
+            this.strategy = strategy;
+        }
+        Bouns.prototype.getBouns = function () {
+            return this.strategy.calculate(this.salary);
+        }
+
+        const bouns = new Bouns();
+        bouns.setSalary(10000);// 设置薪资
+        bouns.setStrategy(new performanceB()); // 设置策略对象
+        console.log(bouns.getBouns()); // 20000
+        bouns.setStrategy(new performanceS()); // 设置策略对象
+        console.log(bouns.getBouns()); // 40000
+        // 以上代码更适合面向对象的编程语言 比如Java
+
+        // 在js中 函数也是对象，所以更简单的做法如下
+
+        const strategies = {
+            "S": function (salary) {
+                return salary * 4;
+            },
+            "A": function (salary) {
+                return salary * 3;
+            },
+            "B": function (salary) {
+                return salary * 2;
+            },
+        }
+
+        const calculateBouns = function (level, salary) {
+            return strategies[level](salary);
+        }
+
+        console.log(calculateBouns("S", 10000)); // 40000
+        console.log(calculateBouns("A", 10000)); // 30000
+
+
+        /**
+         *   动画案例
+         *   参数
+         *    t: 动画已消耗的时间
+         *    b: 小球原始位置
+         *    c: 小球目标位置
+         *    d: 动画持续的总时间
+         *  返回值是动画元素的位置
+         */
+
+        const tween = {
+
+            linear: function (t, b, c, d) {
+                return c * t / d + b
+            },
+            easeIn: function (t, b, c, d) {
+                return c * (t = t / d) * t + b;
+            },
+            strongEaseIn: function (t, b, c, d) {
+                return c * (t /= d) * t * t * t * t + b;
+            },
+            strongEaseOut: function (t, b, c, d) {
+                return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
+            },
+            sineaseIn: function (t, b, c, d) {
+                return c * (t /= d) * t * t + b;
+            },
+            sineaseOut: function (t, b, c, d) {
+                return c * ((t = t / d - 1) * t * t + 1) + b;
+            }
+        }
+
+        const Animate = function (dom) {
+            this.dom = dom; // 进行运动的dom节点
+            this.startTime = 0; // 动画开始时间
+            this.startPos = 0;// 动画开始，dom节点的位置，即dom初始位置
+            this.endPos = 0; // 动画结束时，dom节点的位置，即dom目标位置
+            this.propertyName = null; // dom节点需要改变的css属性名
+            this.easing = null; // 缓动算法
+            this.duration = null; // 动画持续时间
+        }
+        // 开始执行动画
+        Animate.prototype.start = function (propertyName, endPos, duration, easing) {
+            this.startTime = +new Date; // 动画启动时间
+            this.startPos = this.dom.getBoundingClientRect()[propertyName]; // dom节点初始位置
+
+            this.propertyName = propertyName; // dom节点需要被改变的css属性名
+            this.endPos = endPos; // dom节点目标位置
+            this.duration = duration; // 动画持续时间
+            this.easing = tween[easing]; // 缓动算法
+
+            const self = this;
+            const timeId = setInterval(function () {
+                if (self.step() === false) { // 如果动画已经结束，则清空定时器
+                    clearInterval(timeId)
+                }
+            }, 19)
+        }
+        // 每一帧dom要做的事情
+        Animate.prototype.step = function () {
+            const t = +new Date; // 获取当钱时间
+            if (t > this.startTime + this.duration) { // 动画已经结束
+                this.update(this.endPos);
+                return false
+            }
+            // dom当前位置
+            const pos = this.easing(t - this.startTime, this.startPos, this.endPos - this.startPos, this.duration);
+            // 更新小球的 css 属性值
+            this.update(pos)
+        };
+
+        // 更新dom css 属性值
+        Animate.prototype.update = function (pos) {
+            this.dom.style[this.propertyName] = pos + 'px';
+        };
+
+        const div = document.querySelector('#div');
+        const animate = new Animate(div);
+        animate.start('left', 500, 1000, "sineaseOut");
+
+        /**
+         * 表单提交案例
+         */
+
+        /***************************策略对象******************************/
+
+        const strategiesF = {
+            isNonEmpty: function (value, errorMsg) {
+                if (value === "" || !value) {
+                    return errorMsg;
+                }
+            },
+            minLength: function (value, length, errorMsg) {
+                if (value.length < length) {
+                    return errorMsg;
+                }
+            },
+            isMobile: function (value, errorMsg) {
+                if (!/(^1[3|5|8][0-9]{9}$)/.test(value)) {
+                    return errorMsg;
+                }
+            }
+        };
+
+        const Vaildator = function () {
+            this.cache = [];
+        };
+
+        /*************************单条规则***********************************/
+
+        // Vaildator.prototype.add = function (dom, rule, errorMsg) {
+        //     const ary = rule.split(':');
+        //     this.cache.push(function () {
+        //         const strategy = ary.shift();
+        //         ary.unshift(dom.value);
+        //         ary.push(errorMsg);
+        //         return strategiesF[strategy].apply(dom, ary);
+        //     })
+        // };
+        /*************************多个规则**************************/
+
+        Vaildator.prototype.add = function (dom, rules) {
+            const self = this;
+            rules.forEach(rule => {
+                const strategAry = rule.strategy.split(':');
+                const errorMsg = rule.errorMsg;
+
+                self.cache.push(function () {
+                    const strategy = strategAry.shift();
+                    strategAry.unshift(dom.value);
+                    strategAry.push(errorMsg);
+                    return strategiesF[strategy].apply(dom, strategAry)
+                })
+            })
+        };
+
+        Vaildator.prototype.start = function () {
+            for (let i = 0, vaildatorFun; vaildatorFun = this.cache[i++];) {
+                const msg = vaildatorFun();
+                if (msg) {
+                    return msg;
+                }
+            }
+        }
+
+        const loginFrom = document.querySelector('form');
+        const vaildataFunc = function () {
+            const vaildator = new Vaildator();
+            vaildator.add(loginFrom.username, [
+                {
+                    strategy: "isNonEmpty",
+                    errorMsg: "用户名不能为空",
+                },
+                {
+                    strategy: "minLength:8",
+                    errorMsg: "用户名长度不能小于8位"
+                }
+            ]);
+            vaildator.add(loginFrom.password, [
+                {
+                    strategy: "isNonEmpty",
+                    errorMsg: "密码不能为空",
+                },
+                {
+                    strategy: "minLength:8",
+                    errorMsg: "密码长度不能小于8位"
+                }
+            ]);
+            vaildator.add(loginFrom.phone, [
+                {
+                    strategy: "isNonEmpty",
+                    errorMsg: "手机号不能为空",
+                },
+                {
+                    strategy: "isMobile",
+                    errorMsg: "手机号码格式不正确"
+                }
+            ]);
+            const errorMsg = vaildator.start();
+            return errorMsg;
+        }
+
+        loginFrom.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const errorMsg = vaildataFunc();
+            if (errorMsg) {
+                alert(errorMsg);
+                return;
+            }
+            alert('登陆成功');
+        })
+    </script>
+</body>
+
+</html>
