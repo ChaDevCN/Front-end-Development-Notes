@@ -1,26 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <script>
-      function foo(num) {
-        console.log("foo", num);
 
-        this.count++;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
 
-      foo.count = 0;
-      var i;
-      for (i = 0; i < 10; i++) {
+<body>
+  <script>
+
+    // no good 因为每一次调用 函数foo都是普通函数，普通函数this指向window。所以无法获取正确的count
+    function foo(num) {
+      console.log("foo", num);
+      console.log(this);
+
+      this.count++;
+    }
+
+    foo.count = 0;
+    var i;
+    for (i = 0; i < 10; i++) {
+      if (i > 5) {
         foo(i);
       }
-      console.log(foo.count);
-    </script>
-    <script>
+    }
+    console.log(foo.count);
+
+    // window.name = 'globalName';
+    const myObj = {
+      name: 'liu',
+      getName: function () {
+        return this.name
+      }
+    }
+    const getName = myObj.getName
+    console.log(myObj.getName()); // liu
+    console.log(getName()); // globalName
+
+
+  </script>
+  <!-- <script>
         function baz () {
             console.log('baz')
             bar()
@@ -33,6 +53,7 @@
             console.log('foo');
         }
         baz()
-    </script>
-  </body>
+    </script> -->
+</body>
+
 </html>

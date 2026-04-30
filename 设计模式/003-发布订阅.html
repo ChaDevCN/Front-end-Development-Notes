@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设计模式 - 发布订阅</title>
+</head>
+
+<body>
+    <script>
+        /**
+         * 最简单的发布订阅
+         **/
+        (function () {
+            const salesOffices = {};
+
+            salesOffices.clientList = [];
+            salesOffices.listen = function (fn) { // 订阅
+                this.clientList.push(fn);
+            }
+            salesOffices.trigger = function () { // 发布
+                for (let i = 0, fn; fn = this.clientList[i++];) {
+                    fn.apply(this, arguments)
+                }
+            }
+            salesOffices.listen(function (...arguments) {
+                console.log('订阅', ...arguments);
+            })
+            salesOffices.listen(function () {
+                console.log('订阅2');
+            })
+            salesOffices.trigger(1, 2, 2, 3)
+        }());
+
+        /**
+         *  根据key发布
+         * */
+        (function () {
+            const salesOffices = {};
+            salesOffices.clientList = {};
+            salesOffices.listen = function (key, fn) {
+                if (!this.clientList[key]) {
+                    this.clientList[key] = []
+                }
+                this.clientList[key].push(fn)
+
+            }
+            salesOffices.trigger = function () {
+                const key = Array.prototype.shift.call(arguments);
+                fns = this.clientList[key];
+                if (!fns || fns.length === 0) return false
+
+                for (let i = 0, fn; fn = fns[i++];) {
+                    fn.apply(this, arguments)
+                }
+            }
+
+            salesOffices.listen('8000', (key) => {
+                console.log('8000: ', key, '--');
+            })
+            salesOffices.listen('8000', (key) => {
+                console.log('8000: ', key);
+            })
+            salesOffices.listen('84000', (key) => {
+                console.log('8000: ', key);
+            })
+            salesOffices.trigger('8000', 123)
+        }())
+
+            /**
+             * 通用发布订阅
+             **/
+            ; (function () {
+                const event = {
+                    clientList: {},
+                    listen: function (key, fn) {
+                        if (!this.clientList[key]) {
+                            this.clientList[key] = []
+                        }
+                        this.clientList[key].push(fn)
+                    },
+                    trigger: function () {
+                        const key = Array.prototype.shift.call(arguments);
+
+                        const fns = this.clientList[key];
+
+                        if (!fns || fns.length === 0) return false
+
+                        for (let i = 0, fn; fn = fns[i++];) {
+                            fn.apply(this, arguments)
+                        }
+                    }
+                };
+
+                const installEvent = (ojb) => {
+                    for (const i in event) {
+                        ojb[i] = event[i];
+                    }
+                    return ojb
+                }
+
+                const saelsOffices = installEvent({})
+
+                saelsOffices.listen('8', () => {
+                    console.log('订阅8触发了');
+                })
+                saelsOffices.trigger('7')
+            }())
+
+
+            /**
+             * 实现取消订阅
+             **/
+            ; (function () {
+                const event = {
+                    clientList: {},
+                    listen: function (key, fn) {
+                        if (!this.clientList[key]) {
+                            this.clientList[key] = []
+                        }
+                        this.clientList[key].push(fn)
+                    },
+                    trigger: function () {
+                        const key = Array.prototype.shift.call(arguments);
+
+                        const fns = this.clientList[key];
+
+                        if (!fns || fns.length === 0) return false
+
+                        for (let i = 0, fn; fn = fns[i++];) {
+                            fn.apply(this, arguments)
+                        }
+                    },
+                    remove: function (key, fn) {
+                        // 核心是 根据订阅的fn 和 取消订阅的fn 进行判断
+                        const fns = this.clientList[key];
+
+                        if (!fns) return // 没有 被订阅
+                        if (!fn) fns && (fns.length = 0); // 没有传入fn，取消所有订阅
+                        for (let i = fns.length - 1; i >= 0; i--) {
+                            const _fn = fns[i]
+                            
+                            if (_fn === fn) {
+                                fns.splice(i, 1)
+                            }
+                        }
+
+                    }
+                };
+
+                const installEvent = (ojb) => {
+                    for (const i in event) {
+                        ojb[i] = event[i];
+                    }
+                    return ojb
+                }
+                const saelsOffices = installEvent({});
+                const fn = () => {
+                    console.log('监听ddd');
+
+                }
+                saelsOffices.listen('ddd', fn)
+                saelsOffices.listen('bbbb', fn)
+                saelsOffices.listen('bbbb', fn)
+                saelsOffices.listen('bbbb', fn)
+                saelsOffices.listen('bbbb', fn)
+                saelsOffices.listen('ddd', fn)
+                saelsOffices.trigger('ddd')
+                saelsOffices.trigger('bbbb')
+                saelsOffices.remove('bbbb')
+                saelsOffices.trigger('bbbb')
+                saelsOffices.trigger('bbbb')
+                saelsOffices.trigger('bbbb')
+                saelsOffices.trigger('bbbb')
+                saelsOffices.trigger('bbbb')
+                saelsOffices.remove('ddd', fn)
+                saelsOffices.trigger('ddd')
+                saelsOffices.trigger('ddd')
+                saelsOffices.trigger('ddd')
+                saelsOffices.trigger('ddd')
+
+            }());
+    </script>
+</body>
+
+</html>

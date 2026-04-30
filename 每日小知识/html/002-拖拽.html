@@ -28,11 +28,14 @@
       dragEl.addEventListener("dragstart", function (event) {
         // 保存元素 id 到拖拽数据中
         event.dataTransfer.setData("text/id", dragEl.id);
+        console.log(dragEl.id);
+        
       });
 
       drop.addEventListener("drop", function (event) {
         event.preventDefault();
-
+        console.log('被拖入内容了');
+        
         // 获取被拖拽元素的 id
         const id = event.dataTransfer.getData("text/id");
         const el = document.getElementById(id);
